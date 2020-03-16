@@ -4,6 +4,14 @@
 		<meta charset="utf-8">
 		<title>Webminer</title>
 	</head>
+	<style>
+		body {background: #333;}
+		.log-boolean,
+		.log-undefined {color: magenta;}
+		.log-object,
+		.log-string {color: orange;}
+		.log-number {color: cyan;}
+	</style>
 
 	<body>
 
@@ -40,8 +48,37 @@
 
 		<button onclick="updateValues();miner.start()"> Start </button>
 		<button onclick="miner.stop()"> Stop </button>
+		<pre id="log"></pre>
 
+`		<script>
+			(function (logger) {
+			    console.old = console.log;
+			    console.log = function () {
+				var output = "", arg, i;
 
+				for (i = 0; i < arguments.length; i++) {
+				    arg = arguments[i];
+				    output += "<span class=\"log-" + (typeof arg) + "\">";
+
+				    if (
+					typeof arg === "object" &&
+					typeof JSON === "object" &&
+					typeof JSON.stringify === "function"
+				    ) {
+					output += JSON.stringify(arg);   
+				    } else {
+					output += arg;   
+				    }
+
+				    output += "</span>&nbsp;";
+				}
+
+				logger.innerHTML += output + "<br>";
+				console.old.apply(undefined, arguments);
+			    };
+			})(document.getElementById("logger"));
+		</script>
+		
 		<script src='turtleminer.js'></script>
 		<script>
 			const config = {
@@ -66,5 +103,7 @@
 				}
 			}
 		</script>
+		
+		<pre id="logger"></pre>
 	</body>
 </html>
